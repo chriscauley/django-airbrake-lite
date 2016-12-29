@@ -6,3 +6,4 @@ class JSError(models.Model):
   data = jsonfield.JSONField()
   ip = models.CharField(max_length=20)
   user = models.ForeignKey(settings.AUTH_USER_MODEL,null=True,blank=True)
+  created = models.DateTimeField(auto_now_add=True)

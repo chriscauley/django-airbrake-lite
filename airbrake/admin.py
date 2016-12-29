@@ -9,6 +9,7 @@ class JSErrorAdmin(admin.ModelAdmin):
   raw_id_fields = ("user",)
   fields = ("user","ip","_data",)
   readonly_fields = ("_data",)
+  list_display = ("user","created","url")
   def _data(self,obj):
     lines = []
     for k,v in sorted(obj.data.items()):
@@ -16,3 +17,5 @@ class JSErrorAdmin(admin.ModelAdmin):
         lines.append("<h4>%s</h4><pre>%s</pre>"%(k,json.dumps(v,sort_keys=True, indent=4)))
     return "".join(lines)
   _data.allow_tags = True
+  def url(self,obj):
+    return obj.data.get("context",{}).get("url","No Url")
