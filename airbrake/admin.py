@@ -7,9 +7,10 @@ import json
 @admin.register(JSError)
 class JSErrorAdmin(admin.ModelAdmin):
   raw_id_fields = ("user",)
-  fields = ("user","ip","_data",)
+  fields = ("user","ip","status","notes","_data",)
   readonly_fields = ("_data",)
-  list_display = ("user","created","url","message")
+  list_filter = ('status',)
+  list_display = ("user","created","url","message","status")
   def _data(self,obj):
     lines = []
     for k,v in sorted(obj.data.items()):
