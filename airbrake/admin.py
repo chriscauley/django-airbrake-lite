@@ -4,6 +4,9 @@ from .models import JSError
 
 import json
 
+def mark_resolved(modeladmin, request, queryset):
+    queryset.update(status='resolved')
+
 @admin.register(JSError)
 class JSErrorAdmin(admin.ModelAdmin):
   raw_id_fields = ("user",)
@@ -11,6 +14,7 @@ class JSErrorAdmin(admin.ModelAdmin):
   readonly_fields = ("_data",)
   list_filter = ('status',)
   list_display = ("user","created","url","message","status")
+  actions = [mark_resolved]
   def _data(self,obj):
     lines = []
     for k,v in sorted(obj.data.items()):
