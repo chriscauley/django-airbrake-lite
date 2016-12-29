@@ -1,0 +1,21 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/airbrake-js/0.5.9/client.min.js"></script>
+<script>
+  var airbrake = new airbrakeJs.Client({projectId:1,projectKey:'txrx',host:window.location.origin});
+  window.onerror = airbrake.onerror;
+  airbrake._reporters = [];
+  airbrake.getData = function(notice) {
+    return {}
+  }
+  airbrake.addReporter(function(notice) {
+    var request = new XMLHttpRequest();
+    request.open("POST", "/js_error/" , true);
+    request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+    var form_data = new FormData();
+    var data = airbrake.getData();
+    for (var key in data) { form_data.append(key,data[key]); };
+    form_data.append('data', JSON.stringify(notice));
+    request.send(form_data);
+  });
+
+monkey();
+</script>
