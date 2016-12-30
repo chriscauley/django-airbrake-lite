@@ -5,7 +5,7 @@ from .models import JSError
 import json
 
 def mark_resolved(modeladmin, request, queryset):
-    queryset.update(status='resolved')
+  queryset.update(status='resolved')
 
 @admin.register(JSError)
 class JSErrorAdmin(admin.ModelAdmin):

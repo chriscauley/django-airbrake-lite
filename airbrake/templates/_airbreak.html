@@ -1,22 +1,37 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/airbrake-js/0.5.9/client.min.js"></script>
 <script>
-  var airbrake = new airbrakeJs.Client({projectId:1,projectKey:'txrx',host:window.location.origin});
-  window.onerror = airbrake.onerror;
-  airbrake._reporters = [];
-  airbrake._log = [];
-  airbrake.log = function(s) {
-    if (s && s.toString) { s = s.toString() }
-    airbrake._log.push(s);
-  }
-  airbrake.addReporter(function(notice) {
-    var request = new XMLHttpRequest();
-    request.open("POST", "/js_error/" , true);
-    request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-    notice.context.log = airbrake._log;
-    var form_data = new FormData();
-    form_data.append('data', JSON.stringify(notice));
-    request.send(form_data);
-    airbrake._log = [];
-  });
-  function makeError() { arst() }
+  (function() {
+    var timeout, last_notice;
+    window.airbrake = new airbrakeJs.Client({projectId:1,projectKey:'txrx',host:window.location.origin});
+    window.onerror = airbrake.onerror;
+    airbrake._reporters = [];
+    airbrake.reset = function() {
+      airbrake._log = [];
+      last_notice = undefined;
+    }
+    airbrake.reset();
+    airbrake.send = function() {
+      last_notice.log = airbrake._log.slice();
+      var request = new XMLHttpRequest();
+      request.open("POST", "/js_error/" , true);
+      request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+      var form_data = new FormData();
+      form_data.append('data', JSON.stringify(last_notice));
+      request.send(form_data);
+      airbrake.reset();
+    }
+    airbrake.log = function(s) {
+      if (s && s.toString) { s = s.toString() }
+      airbrake._log.push(s);
+    }
+    airbrake.addReporter(function(notice) {
+      clearTimeout(timeout);
+      if (last_notice) {
+        for (var i =0; i<last_notice.errors.length;i++) { notice.errors.push(last_notice.errors[i]); }
+      }
+      last_notice = notice;
+      timeout = setTimeout(airbrake.send,500);
+    });
+    airbrake.makeError = function() { arst() }
+  })()
 </script>
