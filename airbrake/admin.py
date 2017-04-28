@@ -1,11 +1,15 @@
 from django.contrib import admin
 
-from .models import JSError
+from .models import JSError, ErrorGroup, UserAgent
 
 import json
 
 def mark_resolved(modeladmin, request, queryset):
   queryset.update(status='resolved')
+
+@admin.register(ErrorGroup)
+class ErrorGroupAdmin(admin.ModelAdmin):
+  list_display = ("__unicode__","modified")
 
 @admin.register(JSError)
 class JSErrorAdmin(admin.ModelAdmin):
