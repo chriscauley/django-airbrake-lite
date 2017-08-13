@@ -2,7 +2,7 @@
 <script>
   (function() {
     var timeout, last_notice;
-    window.airbrake = new airbrakeJs.Client({projectId:1,projectKey:'txrx',host:window.location.origin});
+    window.airbrake = new airbrakeJs.Client({projectId:1,projectKey:'{{ settings.SITE_NAME }}',host:window.location.origin});
     window.onerror = airbrake.onerror;
     airbrake._reporters = [];
     airbrake.reset = function() {
@@ -16,6 +16,9 @@
       request.open("POST", "/js_error/" , true);
       request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
       var form_data = new FormData();
+      if (uR && uR.cookie.get("csrftoken")) {
+        request.setRequestHeader("X-CSRFToken",uR.cookie.get("csrftoken"));
+      }
       form_data.append('data', JSON.stringify(last_notice));
       request.send(form_data);
       airbrake.reset();
@@ -32,6 +35,6 @@
       last_notice = notice;
       timeout = setTimeout(airbrake.send,500);
     });
-    airbrake.makeError = function() { arst() }
+    airbrake.makeError = function() { setTimeout(function() {arst()},10) }
   })()
 </script>
