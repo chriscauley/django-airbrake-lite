@@ -8,7 +8,7 @@ import json
 def js_error(request):
   if not 'data' in request.POST:
     raise Http404()
-  if "Googlebot" in request.POST['data'].get("userAgent",""):
+  if "Googlebot" in request.POST['data']:
     raise Http404()
   user = request.user if request.user.is_authenticated() else None
   JSError.objects.create(
