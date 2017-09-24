@@ -36,5 +36,6 @@
       timeout = setTimeout(airbrake.send,500);
     });
     airbrake.makeError = function() { setTimeout(function() {arst()},10) }
+    if (~window.location.search.indexOf("airbrake.makeError")) { airbrake.makeError() }
   })()
 </script>
